@@ -4,12 +4,12 @@
 const BILDER = {
 
   titelbild: {
-    url: "https://raw.githubusercontent.com/ha7221483-oss/eiscafe-nico/main/bild_009.jpg",
+    url: "https://raw.githubusercontent.com/ha7221483-oss/eiscafe-nico/main/bild_001.jpg",
     alt: "Eiscafé Nico"
   },
 
   eismobil: {
-    url: "https://raw.githubusercontent.com/ha7221483-oss/eiscafe-nico/main/bild_009.jpg",
+    url: "https://raw.githubusercontent.com/ha7221483-oss/eiscafe-nico/main/bild_002.jpg",
     alt: "Das Eismobil von Eiscafé Nico"
   },
 
