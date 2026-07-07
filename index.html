@@ -647,6 +647,10 @@ footer a:hover { color: var(--gold); }
   cursor: zoom-in; aspect-ratio: 4/3; background: rgba(255,255,255,0.06);
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   transition: transform .25s, box-shadow .25s;
+  /* Bei vielen Bildern (60-70+) sorgt das dafür, dass der Browser Layout/Paint
+     für Kacheln außerhalb des Bildschirms komplett überspringt -> kein Ruckeln. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 220px;
 }
 .gallery-tile:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
 .gallery-tile img {
@@ -937,6 +941,7 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="bilder-config.js"></script>
+<script src="speisekarte-config.js"></script>
 </head>
 <body>
 
@@ -962,7 +967,7 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
     <h1>Original <em>italienisches</em> Eis, täglich frisch</h1>
     <p class="hero-sub">Frische Eisspezialitäten, hausgemachte Kuchen, Kaffee und mehr – direkt in der Innenstadt von Templin.</p>
     <div class="hero-badges">
-      <span class="badge gold">🍦 <span class="num-one">1</span> Kugel = 1,00 €</span>
+      <span class="badge gold">🍦 <span class="num-one">1</span> Kugel = <span id="kugelPreisBadge">1,00 €</span></span>
       <span class="badge">🌿 Glutenfrei möglich</span>
       <span class="badge">🥛 Laktosefrei möglich</span>
       <span class="badge">🌱 Milchfrei möglich</span>
@@ -1055,7 +1060,7 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
   <div class="bg-anim" id="bgPreis"></div>
   <div class="pb-inner">
     <p class="pb-eyebrow">Unser Versprechen – für Groß und Klein</p>
-    <p class="pb-headline"><span class="num-one">1</span> Kugel = <span>1,00 €</span></p>
+    <p class="pb-headline"><span class="num-one">1</span> Kugel = <span id="kugelPreisBanner">1,00 €</span></p>
     <p class="pb-sub">Ein Löffel Italien, mitten in Templin</p>
   </div>
 </div>
@@ -1168,123 +1173,36 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
 
   <!-- EISBECHER -->
   <div class="tab-content active" id="tab-eis" data-print-label="🍨 Eisbecher">
-    <div class="menu-grid menu-grid-wrap" id="wrap-eis">
-      <div class="menu-item"><div class="name">Amarena-Becher <small>gemischtes Eis, Amarena-Kirschen, Amarena-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Joghurt-Becher <small>gemischtes Eis, Natur-Joghurt &amp; Sauce, wahlweise Kiwi, Banane, Amarena-Kirschen, Erdbeeren (nach Saison), Heidelbeeren</small></div><div class="price">10,60 €</div></div>
-      <div class="menu-item"><div class="name">Bananensplit <small>gemischtes Eis, Bananen, Streusel, Schoko-Sauce &amp; Sahne</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Coppa per due <small>für 2 Personen – gemischtes Eis, gemischtes Obst, Schoko-Pralinen, Erdbeer- &amp; Schoko-Sauce &amp; Sahne</small></div><div class="price">auf Anfrage</div></div>
-      <div class="menu-item"><div class="name">Kiwi-Becher <small>gemischtes Eis, frische Kiwi, Kiwi-Sauce &amp; Sahne</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Heidelbeer-Becher <small>gemischtes Eis, Heidelbeeren, Sauce &amp; Sahne</small></div><div class="price">10,60 €</div></div>
-      <div class="menu-item"><div class="name">Erdbeer-Becher <small>nach Saison – gemischtes Eis, Erdbeeren, Erdbeer-Sauce &amp; Sahne</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Früchte-Becher <small>gemischtes Eis, frisches Obst (nach Saison), Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">After Eight-Becher <small>gemischtes Eis, Minz- &amp; Schoko-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Krokant-Becher <small>gemischtes Eis, Krokantsplitter, Karamell-Sauce &amp; Sahne</small></div><div class="price">10,50 €</div></div>
-      <div class="menu-item"><div class="name">Rocher-Becher <small>nach Saison – gemischtes Eis, Rocher Pralinen, Nusskrokant, Karamell-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Raffaello-Becher <small>nach Saison – gemischtes Eis, Raffaello Pralinen, weiße Schokolade, Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Schoko-Becher <small>gemischtes Eis, Schoko-Splitter, Schoko-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Nuss-Becher <small>gemischtes Eis, Haselnüsse, Nuss-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Amaretto-Becher <small>gemischtes Eis, Amaretto-Likör, Amarettokekse, Krokant, Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Kiba-Becher <small>Kirsch-Banane – gemischtes Eis, Amarena-Kirschen, Banane, Amarena-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Melonen-Becher <small>nach Saison – gemischtes Eis, frische Melone, Tropical-Sauce &amp; Sahne</small></div><div class="price">10,90 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti Carbonara <small>Vanilleeis, Krokantstreusel, Karamell-Sauce &amp; Sahne</small></div><div class="price">9,40 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti-Eis <small>Vanilleeis, weiße Schokolade, Erdbeer-Sauce &amp; Sahne</small></div><div class="price">9,40 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti-Kiwi <small>Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, frische Kiwis</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti-Fragole <small>Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, frische Erdbeeren</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti-Italia <small>Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, Erdbeer-Sauce, Kiwis, Erdbeeren</small></div><div class="price">9,90 €</div></div>
-      <div class="menu-item"><div class="name">Spaghetti Eis für Kinder <small>Vanilleeis, Erdbeer-Sauce, weiße Schokolade &amp; Sahne</small></div><div class="price">7,60 €</div></div>
-      <div class="menu-item"><div class="name">Kinder-Eisbecher <small>2 Kugeln gemischtes Eis, Kinder-Überraschung, Smarties, Sauce &amp; Sahne</small></div><div class="price">8,50 €</div></div>
-      <div class="menu-item"><div class="name">Pinocchio Eis <small>gemischtes Eis, Smarties, Zuckerstreusel &amp; Sahne</small></div><div class="price">6,15 €</div></div>
-      <div class="menu-item"><div class="name">Micky Maus Eis <small>gemischtes Eis, Smarties, Zuckerstreusel &amp; Sahne</small></div><div class="price">6,15 €</div></div>
-    </div>
-    <button class="menu-more-btn" onclick="toggleMenu('wrap-eis',this)">▼ Alle 26 Eisbecher anzeigen</button>
-    <p class="menu-notice">Alle Eisbecher auch zum Mitnehmen (außer Haus). · Kugel Eis 1,00 € · Portion Sahne 1,50 € · Sauce extra 0,80 € · Streusel extra 0,80 €</p>
+    <div class="menu-grid menu-grid-wrap" id="wrap-eis"></div>
+    <button class="menu-more-btn" id="btn-eis" onclick="toggleMenu('wrap-eis',this)">▼ Alle Eisbecher anzeigen</button>
+    <p class="menu-notice" id="hinweis-eis"></p>
   </div>
 
   <!-- KAFFEE -->
   <div class="tab-content" id="tab-kaffee" data-print-label="☕ Kaffee & Heißgetränke">
-    <div class="menu-grid menu-grid-wrap" id="wrap-kaffee">
-      <div class="menu-item"><div class="name">Kaffee Crema <small>auch entcoffeiniert</small></div><div class="price">1,70 €</div></div>
-      <div class="menu-item"><div class="name">Pott Kaffee Crema <small>auch entcoffeiniert</small></div><div class="price">3,10 €</div></div>
-      <div class="menu-item"><div class="name">Kännchen <small>auch entcoffeiniert</small></div><div class="price">3,10 €</div></div>
-      <div class="menu-item"><div class="name">Milchkaffee</div><div class="price">3,40 €</div></div>
-      <div class="menu-item"><div class="name">Espresso <small>auch groß 2,60 €</small></div><div class="price">1,40 €</div></div>
-      <div class="menu-item"><div class="name">Espresso Macchiato</div><div class="price">2,00 €</div></div>
-      <div class="menu-item"><div class="name">Cappuccino <small>auch groß 4,60 €</small></div><div class="price">3,90 €</div></div>
-      <div class="menu-item"><div class="name">Espresso-Cappuccino</div><div class="price">4,90 €</div></div>
-      <div class="menu-item"><div class="name">Schoko-Cappuccino</div><div class="price">4,90 €</div></div>
-      <div class="menu-item"><div class="name">Eiskaffee</div><div class="price">4,90 €</div></div>
-      <div class="menu-item"><div class="name">Latte Macchiato</div><div class="price">3,60 €</div></div>
-      <div class="menu-item"><div class="name">Iced Latte Macchiato</div><div class="price">3,90 €</div></div>
-      <div class="menu-item"><div class="name">Caffè Latte</div><div class="price">4,60 €</div></div>
-      <div class="menu-item"><div class="name">Nico Spezial <small>Eierlikör</small></div><div class="price">–</div></div>
-      <div class="menu-item"><div class="name">Latte Macchiato Flavour <small>Haselnuss, Karamell, Vanille, Erdbeere, Schokolade, Curaçao Bleu alk.frei, Amaretto alk.frei</small></div><div class="price">4,90 €</div></div>
-    </div>
-    <button class="menu-more-btn" onclick="toggleMenu('wrap-kaffee',this)">▼ Alle 15 Kaffeespezialitäten anzeigen</button>
+    <div class="menu-grid menu-grid-wrap" id="wrap-kaffee"></div>
+    <button class="menu-more-btn" id="btn-kaffee" onclick="toggleMenu('wrap-kaffee',this)">▼ Alle Kaffeespezialitäten anzeigen</button>
   </div>
 
   <!-- SHAKES -->
   <div class="tab-content" id="tab-shakes" data-print-label="🥤 Shakes & Milchgetränke">
-    <div class="menu-grid menu-grid-wrap" id="wrap-shakes">
-      <div class="menu-item"><div class="name">Hot Chocolate</div><div class="price">3,35 €</div></div>
-      <div class="menu-item"><div class="name">Hot Chocolate + Sahne</div><div class="price">4,35 €</div></div>
-      <div class="menu-item"><div class="name">Hot Chocolate mit Baileys oder Karamell</div><div class="price">4,60 €</div></div>
-      <div class="menu-item"><div class="name">Hot'n Cold Chocolate</div><div class="price">4,00 €</div></div>
-      <div class="menu-item"><div class="name">Chococcino</div><div class="price">4,20 €</div></div>
-      <div class="menu-item"><div class="name">Iced Chococcino</div><div class="price">4,70 €</div></div>
-      <div class="menu-item"><div class="name">Milchshake mit Sahne <small>ohne Eis – Erdbeere, Vanille, Schoko, Banane, Mango, Cookies, Mint</small></div><div class="price">3,90 €</div></div>
-      <div class="menu-item"><div class="name">Eismilchshake mit Sahne <small>mit Eis – Erdbeere, Vanille, Schoko, Banane, Mango, Cookies, Mint</small></div><div class="price">4,90 €</div></div>
-      <div class="menu-item"><div class="name">Coca Cola 0,33 l</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">Fanta, Sprite 0,33 l</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">Banane, Kirsche, Orange, Apfel</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">Mineralwasser 0,33 l</div><div class="price">1,90 €</div></div>
-      <div class="menu-item"><div class="name">Stilles Wasser</div><div class="price">1,60 €</div></div>
-      <div class="menu-item"><div class="name">Apfelschorle, Multi 0,33 l</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">KIBA <small>Kirsch-Banane</small></div><div class="price">2,70 €</div></div>
-      <div class="menu-item"><div class="name">Caprisonne</div><div class="price">1,00 €</div></div>
-    </div>
-    <button class="menu-more-btn" onclick="toggleMenu('wrap-shakes',this)">▼ Alle 16 Getränke anzeigen</button>
+    <div class="menu-grid menu-grid-wrap" id="wrap-shakes"></div>
+    <button class="menu-more-btn" id="btn-shakes" onclick="toggleMenu('wrap-shakes',this)">▼ Alle Getränke anzeigen</button>
   </div>
 
   <!-- COCKTAILS / WEIN -->
   <div class="tab-content" id="tab-cocktails" data-print-label="🍹 Wein & Cocktails">
     <div class="menu-grid menu-grid-wrap" id="wrap-cocktails">
-      <div class="menu-item"><div class="name">Weißwein 0,25 l</div><div class="price">2,80 €</div></div>
-      <div class="menu-item"><div class="name">Rotwein 0,25 l</div><div class="price">2,80 €</div></div>
-      <div class="menu-item"><div class="name">Weißweinschorle</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">Rotweinschorle</div><div class="price">2,50 €</div></div>
-      <div class="menu-item"><div class="name">Sekt</div><div class="price">2,80 €</div></div>
-      <div class="menu-item"><div class="name">Bier (Flasche 0,5 l)</div><div class="price">2,10 €</div></div>
-      <div class="menu-item"><div class="name">Radler</div><div class="price">2,10 €</div></div>
-      <div class="menu-item"><div class="name">Grüne Wiese <small>Blue Curaçao, O-Saft, Sekt</small></div><div class="price">5,90 €</div></div>
-      <div class="menu-item"><div class="name">Orangen Cup <small>O-Saft, Van.-Eis, Sekt</small></div><div class="price">5,90 €</div></div>
-      <div class="menu-item"><div class="name">Sanfter Engel <small>O-Saft, Van.-Eis, Sahne</small></div><div class="price">3,90 €</div></div>
-      <div class="menu-item"><div class="name">Sanfter Engel mit Rum <small>mit Alkohol</small></div><div class="price">5,90 €</div></div>
-      <div class="menu-item"><div class="name">Cola Whisky</div><div class="price">5,90 €</div></div>
-      <div class="menu-item"><div class="name">Arancia Crema <small>O-Saft, Eis, Sahne, Amarena</small></div><div class="price">4,00 €</div></div>
-      <div class="menu-item"><div class="name">Latina Kiss <small>Kirschsaft, Eis, Sahne, Amarena</small></div><div class="price">4,00 €</div></div>
-      <div class="menu-item"><div class="name">Formula One <small>Rum, Kokoslikör, Ananas, Grenadine</small></div><div class="price">5,90 €</div></div>
-      <div class="menu-item"><div class="name">Planter's Punch <small>Rum, Orange, Ananas, Zitrone</small></div><div class="price">5,90 €</div></div>
     </div>
-    <button class="menu-more-btn" onclick="toggleMenu('wrap-cocktails',this)">▼ Alle 16 Weine &amp; Cocktails anzeigen</button>
+    <button class="menu-more-btn" id="btn-cocktails" onclick="toggleMenu('wrap-cocktails',this)">▼ Alle Weine &amp; Cocktails anzeigen</button>
   </div>
 
   <!-- KUCHEN -->
   <div class="tab-content" id="tab-kuchen" data-print-label="🍰 Kuchen & Süßes">
     <p style="color:rgba(255,255,255,0.45);margin-bottom:1.4rem;font-size:.9rem">🍰 Täglich frisch gebacken – das Angebot wechselt jeden Tag!</p>
-    <div class="kuchen-grid">
-      <div class="kuchen-card">
-        <div class="kuchen-img">🎂</div>
-        <div class="kuchen-desc"><strong>Tortenangebot</strong><span>siehe Auslage – wechselnde Angebote</span></div>
-      </div>
-      <div class="kuchen-card">
-        <div class="kuchen-img">🥐</div>
-        <div class="kuchen-desc"><strong>1 Apfelstrudel</strong><span>mit Sahne &amp; Eis · 4,90 €</span></div>
-      </div>
-      <div class="kuchen-card">
-        <div class="kuchen-img">🥞</div>
-        <div class="kuchen-desc"><strong>2 Eierkuchen</strong><span>Apfelmus oder Zimt-Zucker, mit Sahne &amp; Eis · 4,90 €</span></div>
-      </div>
-      <div class="kuchen-card" style="background:rgba(144,212,160,0.06);border:2px dashed rgba(144,212,160,0.25);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;padding:2rem;text-align:center">
+    <div class="kuchen-grid" id="kuchenGrid">
+      <!-- wird per JS aus SPEISEKARTE.kuchen befüllt -->
+      <div class="kuchen-card" id="kuchenSurprise" style="background:rgba(144,212,160,0.06);border:2px dashed rgba(144,212,160,0.25);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;padding:2rem;text-align:center">
         <div style="font-size:2.2rem">✨</div>
         <strong style="color:rgba(255,255,255,0.75);font-size:.88rem">Überraschung des Tages</strong>
         <span style="color:rgba(255,255,255,0.35);font-size:.78rem">Einfach vorbeikommen!</span>
@@ -1334,8 +1252,8 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
       </div>
       <div class="eismobil-card">
         <div class="ec-tag">Eismobil-Preis</div>
-        <div class="ec-price">1,50 €</div>
-        <div class="ec-unit">pro Kugel Eis</div>
+        <div class="ec-price" id="eismobilPreis">1,50 €</div>
+        <div class="ec-unit" id="eismobilEinheit">pro Kugel Eis</div>
         <div class="ec-divider"></div>
         <div class="ec-note">Frisch gezapft, direkt vom Mobil.<br>Individuelle Buchung auf Anfrage.<br>Mindestmenge je nach Veranstaltung.</div>
       </div>
@@ -1752,107 +1670,53 @@ function downloadPDF() {
       y += h + 4;
     }
 
+    // ── Daten aus speisekarte-config.js holen (einzige Preisquelle) ──
+    function itemArr(it) { return [it.name, it.preis, it.desc || '']; }
+    function katItems(key, gruppe) {
+      var items = (SPEISEKARTE.kategorien[key] || {}).items || [];
+      return items
+        .filter(function(it) { return gruppe ? it.gruppe === gruppe : !it.gruppe; })
+        .map(itemArr);
+    }
+    var eisExtrasText = (SPEISEKARTE.kategorien.eis || {}).extras || '';
+
     // ── Seite: Eisbecher ──
     newPage();
     pageHeader('EISBECHER');
     sectionTitle('Eisbecher');
-    menuList([
-      ['Amarena-Becher', '10,90 €', 'Gemischtes Eis, Amarena-Kirschen, Amarena-Sauce & Sahne'],
-      ['Joghurt-Becher', '10,60 €', 'Gemischtes Eis, Natur-Joghurt & Sauce, wahlweise Kiwi, Banane, Amarena-Kirschen, Erdbeeren (nach Saison) oder Heidelbeeren'],
-      ['Bananensplit', '9,90 €', 'Gemischtes Eis, Bananen, Streusel, Schoko-Sauce & Sahne'],
-      ['Coppa per due', 'auf Anfrage', 'Für 2 Personen – gemischtes Eis, gemischtes Obst, Schoko-Pralinen, Erdbeer- & Schoko-Sauce & Sahne'],
-      ['Kiwi-Becher', '9,90 €', 'Gemischtes Eis, frische Kiwi, Kiwi-Sauce & Sahne'],
-      ['Heidelbeer-Becher', '10,60 €', 'Gemischtes Eis, Heidelbeeren, Sauce & Sahne'],
-      ['Erdbeer-Becher', '9,90 €', 'Nach Saison – gemischtes Eis, Erdbeeren, Erdbeer-Sauce & Sahne'],
-      ['Früchte-Becher', '10,90 €', 'Gemischtes Eis, frisches Obst (nach Saison), Sauce & Sahne'],
-      ['After Eight-Becher', '10,90 €', 'Gemischtes Eis, Minz- & Schoko-Sauce & Sahne'],
-      ['Krokant-Becher', '10,50 €', 'Gemischtes Eis, Krokantsplitter, Karamell-Sauce & Sahne'],
-      ['Rocher-Becher', '10,90 €', 'Nach Saison – gemischtes Eis, Rocher Pralinen, Nusskrokant, Karamell-Sauce & Sahne'],
-      ['Raffaello-Becher', '10,90 €', 'Nach Saison – gemischtes Eis, Raffaello Pralinen, weiße Schokolade, Sauce & Sahne'],
-      ['Schoko-Becher', '10,90 €', 'Gemischtes Eis, Schoko-Splitter, Schoko-Sauce & Sahne'],
-      ['Nuss-Becher', '10,90 €', 'Gemischtes Eis, Haselnüsse, Nuss-Sauce & Sahne'],
-      ['Amaretto-Becher', '10,90 €', 'Gemischtes Eis, Amaretto-Likör, Amarettokekse, Krokant, Sauce & Sahne'],
-      ['Kiba-Becher', '10,90 €', 'Kirsch-Banane – gemischtes Eis, Amarena-Kirschen, Banane, Amarena-Sauce & Sahne'],
-      ['Melonen-Becher', '10,90 €', 'Nach Saison – gemischtes Eis, frische Melone, Tropical-Sauce & Sahne'],
-    ]);
+    menuList(katItems('eis'));
     pageFooter('Alle Eisbecher auch zum Mitnehmen');
 
     // ── Seite: Spaghetti-Eis & Kinderecke ──
     newPage();
     pageHeader('SPAGHETTI-EIS & KINDERECKE');
     sectionTitle('Spaghetti-Eis');
-    menuList([
-      ['Spaghetti Carbonara', '9,40 €', 'Vanilleeis, Krokantstreusel, Karamell-Sauce & Sahne'],
-      ['Spaghetti-Eis', '9,40 €', 'Vanilleeis, weiße Schokolade, Erdbeer-Sauce & Sahne'],
-      ['Spaghetti-Kiwi', '9,90 €', 'Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, frische Kiwis'],
-      ['Spaghetti-Fragole', '9,90 €', 'Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, frische Erdbeeren'],
-      ['Spaghetti-Italia', '9,90 €', 'Vanilleeis, Sahne, weiße Schokolade, Kiwi-Sauce, Erdbeer-Sauce, Kiwis, Erdbeeren'],
-    ]);
+    menuList(katItems('eis', 'spaghetti'));
     y += 4;
     sectionTitle('Für die Kleinen', 15);
-    menuList([
-      ['Spaghetti Eis für Kinder', '7,60 €', 'Vanilleeis, Erdbeer-Sauce, weiße Schokolade & Sahne'],
-      ['Kinder-Eisbecher', '8,50 €', '2 Kugeln gemischtes Eis, Kinder-Überraschung, Smarties, Sauce & Sahne'],
-      ['Pinocchio Eis', '6,15 €', 'Gemischtes Eis, Smarties, Zuckerstreusel & Sahne'],
-      ['Micky Maus Eis', '6,15 €', 'Gemischtes Eis, Smarties, Zuckerstreusel & Sahne'],
-    ]);
+    menuList(katItems('eis', 'kinder'));
     y += 2;
-    noteBox('Extras: Kugel Eis 1,00 € · Portion Sahne 1,50 € · Sauce extra 0,80 € · Streusel extra 0,80 €');
+    noteBox('Extras: ' + eisExtrasText);
     pageFooter('Alle Preise inkl. MwSt.');
 
     // ── Seite: Kaffee & Heißgetränke ──
     newPage();
     pageHeader('KAFFEE & HEISSGETRÄNKE');
     sectionTitle('Kaffee & Heißgetränke');
-    menuList([
-      ['Kaffee Crema', '1,70 €', 'auch entcoffeiniert'],
-      ['Pott Kaffee Crema', '3,10 €', 'auch entcoffeiniert'],
-      ['Kännchen', '3,10 €', 'auch entcoffeiniert'],
-      ['Milchkaffee', '3,40 €', ''],
-      ['Espresso', '1,40 €', 'auch groß 2,60 €'],
-      ['Espresso Macchiato', '2,00 €', ''],
-      ['Cappuccino', '3,90 €', 'auch groß 4,60 €'],
-      ['Espresso-Cappuccino', '4,90 €', ''],
-      ['Schoko-Cappuccino', '4,90 €', ''],
-      ['Eiskaffee', '4,90 €', ''],
-      ['Latte Macchiato', '3,60 €', ''],
-      ['Iced Latte Macchiato', '3,90 €', ''],
-      ['Caffè Latte', '4,60 €', ''],
-      ['Nico Spezial', '–', 'Eierlikör'],
-      ['Latte Macchiato Flavour', '4,90 €', 'Haselnuss, Karamell, Vanille, Erdbeere, Schokolade, Curaçao Bleu alk.frei, Amaretto alk.frei'],
-    ]);
+    menuList(katItems('kaffee'));
     pageFooter('Bohnen aus eigener Röstung');
 
     // ── Seite: Heiße & Kalte Getränke ──
     newPage();
     pageHeader('HEISSE & KALTE GETRÄNKE');
     sectionTitle('Schokoladen');
-    twoColumnList([
-      ['Hot Chocolate', '3,35 €'],
-      ['Hot Chocolate + Sahne', '4,35 €'],
-      ['Hot Chocolate mit Baileys oder Karamell', '4,60 €'],
-      ["Hot'n Cold Chocolate", '4,00 €'],
-      ['Chococcino', '4,20 €'],
-      ['Iced Chococcino', '4,70 €'],
-    ]);
+    twoColumnList(katItems('shakes', 'schokolade'));
     y += 4;
     sectionTitle('Kalter Milchschaum', 15);
-    menuList([
-      ['Milchshake mit Sahne', '3,90 €', 'ohne Eis – Erdbeere, Vanille, Schoko, Banane, Mango, Cookies, Mint'],
-      ['Eismilchshake mit Sahne', '4,90 €', 'mit Eis – Erdbeere, Vanille, Schoko, Banane, Mango, Cookies, Mint'],
-    ]);
+    menuList(katItems('shakes', 'shake'));
     y += 4;
     sectionTitle('Kaltgetränke', 15);
-    twoColumnList([
-      ['Coca Cola 0,33 l', '2,50 €'],
-      ['Fanta, Sprite 0,33 l', '2,50 €'],
-      ['Banane, Kirsche, Orange, Apfel', '2,50 €'],
-      ['Mineralwasser 0,33 l', '1,90 €'],
-      ['Stilles Wasser', '1,60 €'],
-      ['Apfelschorle, Multi 0,33 l', '2,50 €'],
-      ['KIBA (Kirsch-Banane)', '2,70 €'],
-      ['Caprisonne', '1,00 €'],
-    ]);
+    twoColumnList(katItems('shakes', 'kalt'));
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(7.5);
     doc.setTextColor(GRAY[0], GRAY[1], GRAY[2]);
@@ -1863,31 +1727,12 @@ function downloadPDF() {
     newPage();
     pageHeader('WEIN, COCKTAILS & KUCHEN');
     sectionTitle('Wein & Cocktails');
-    twoColumnList([
-      ['Weißwein 0,25 l', '2,80 €'],
-      ['Rotwein 0,25 l', '2,80 €'],
-      ['Weißweinschorle', '2,50 €'],
-      ['Rotweinschorle', '2,50 €'],
-      ['Sekt', '2,80 €'],
-      ['Bier (Flasche 0,5 l)', '2,10 €'],
-      ['Radler', '2,10 €'],
-      ['Grüne Wiese', '5,90 €', 'Blue Curaçao, O-Saft, Sekt'],
-      ['Orangen Cup', '5,90 €', 'O-Saft, Vanilleeis, Sekt'],
-      ['Sanfter Engel', '3,90 €', 'O-Saft, Vanilleeis, Sahne'],
-      ['Sanfter Engel mit Rum', '5,90 €', 'mit Alkohol'],
-      ['Cola Whisky', '5,90 €', ''],
-      ['Arancia Crema', '4,00 €', 'O-Saft, Eis, Sahne, Amarena'],
-      ['Latina Kiss', '4,00 €', 'Kirschsaft, Eis, Sahne, Amarena'],
-      ['Formula One', '5,90 €', 'Rum, Kokoslikör, Ananas, Grenadine'],
-      ["Planter's Punch", '5,90 €', 'Rum, Orange, Ananas, Zitrone'],
-    ]);
+    twoColumnList(katItems('cocktails'));
     y += 6;
     sectionTitle('Kuchen & Süßes', 15);
-    menuList([
-      ['Tortenangebot', '–', 'Siehe Auslage – täglich wechselnde Angebote'],
-      ['1 Apfelstrudel', '4,90 €', 'mit Sahne & Eis'],
-      ['2 Eierkuchen', '4,90 €', 'Apfelmus oder Zimt-Zucker, mit Sahne & Eis'],
-    ]);
+    menuList(SPEISEKARTE.kuchen.map(function(k) {
+      return [k.titel, k.preis || '–', k.desc];
+    }));
     pageFooter('Alle Preise inkl. MwSt.');
 
     // ── Schlussseite: Kontakt & Öffnungszeiten ──
@@ -2042,23 +1887,100 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   // Galerie
+  // Wichtig für Performance bei vielen Bildern (60-70+): alle Kacheln werden
+  // in einem einzigen DocumentFragment vorbereitet und erst am Ende auf
+  // einen Schlag ins DOM gehängt (ein Reflow statt vieler einzelner).
   var grid = document.getElementById('galleryGrid');
   if (grid && Array.isArray(BILDER.galerie)) {
     grid.innerHTML = '';
+    var galerieFrag = document.createDocumentFragment();
     BILDER.galerie.forEach(function(bild) {
       var tile = document.createElement('div');
       tile.className = 'gallery-tile';
       tile.onclick = function() { openLightbox(bild.url, bild.titel || ''); };
       tile.innerHTML =
-        '<img src="' + bild.url + '" alt="' + (bild.titel || '') + '" loading="lazy">' +
+        '<img src="' + bild.url + '" alt="' + (bild.titel || '') + '" loading="lazy" decoding="async">' +
         '<div class="gallery-caption">' + (bild.titel || '') + '</div>';
-      grid.appendChild(tile);
+      galerieFrag.appendChild(tile);
     });
+    grid.appendChild(galerieFrag);
 
     // "Mehr anzeigen"-Button nur zeigen, wenn es wirklich mehr als 3 Bilder gibt
     var moreBtn = document.getElementById('galleryMoreBtn');
     if (moreBtn && BILDER.galerie.length <= 3) {
       moreBtn.style.display = 'none';
+    }
+  }
+});
+
+// ══ SPEISEKARTE AUS speisekarte-config.js EINFÜGEN ══
+window.addEventListener('DOMContentLoaded', function() {
+  if (typeof SPEISEKARTE === 'undefined') {
+    console.warn('speisekarte-config.js wurde nicht gefunden oder nicht eingebunden.');
+    return;
+  }
+
+  // Preis-Badges (Startseite, Preis-Banner, Eismobil)
+  var kugelBadge = document.getElementById('kugelPreisBadge');
+  if (kugelBadge) kugelBadge.textContent = SPEISEKARTE.kugelPreis;
+  var kugelBanner = document.getElementById('kugelPreisBanner');
+  if (kugelBanner) kugelBanner.textContent = SPEISEKARTE.kugelPreis;
+  if (SPEISEKARTE.eismobil) {
+    var emPreis = document.getElementById('eismobilPreis');
+    if (emPreis) emPreis.textContent = SPEISEKARTE.eismobil.preis;
+    var emEinheit = document.getElementById('eismobilEinheit');
+    if (emEinheit) emEinheit.textContent = SPEISEKARTE.eismobil.einheit;
+  }
+
+  // Menü-Kategorien (Eisbecher, Kaffee, Shakes, Cocktails)
+  function baueMenuItem(item) {
+    var el = document.createElement('div');
+    el.className = 'menu-item';
+    var nameHtml = item.name;
+    if (item.desc) nameHtml += ' <small>' + item.desc + '</small>';
+    el.innerHTML = '<div class="name">' + nameHtml + '</div><div class="price">' + item.preis + '</div>';
+    return el;
+  }
+
+  Object.keys(SPEISEKARTE.kategorien || {}).forEach(function(key) {
+    var kat = SPEISEKARTE.kategorien[key];
+    var wrap = document.getElementById('wrap-' + key);
+    if (!wrap) return;
+    var frag = document.createDocumentFragment();
+    kat.items.forEach(function(item) { frag.appendChild(baueMenuItem(item)); });
+    wrap.innerHTML = '';
+    wrap.appendChild(frag);
+
+    var btn = document.getElementById('btn-' + key);
+    if (btn) {
+      var label = '▼ Alle ' + kat.items.length + ' ' + kat.label + ' anzeigen';
+      btn.textContent = label;
+      btn.dataset.label = label;
+    }
+
+    if (kat.hinweis) {
+      var hinweisEl = document.getElementById('hinweis-' + key);
+      if (hinweisEl) hinweisEl.textContent = kat.hinweis;
+    }
+  });
+
+  // Kuchen-Kacheln (Überraschungs-Karte bleibt unangetastet stehen)
+  var kuchenGrid = document.getElementById('kuchenGrid');
+  var kuchenSurprise = document.getElementById('kuchenSurprise');
+  if (kuchenGrid && Array.isArray(SPEISEKARTE.kuchen)) {
+    var kfrag = document.createDocumentFragment();
+    SPEISEKARTE.kuchen.forEach(function(k) {
+      var card = document.createElement('div');
+      card.className = 'kuchen-card';
+      var beschreibung = k.desc + (k.preis ? ' · ' + k.preis : '');
+      card.innerHTML = '<div class="kuchen-img">' + k.emoji + '</div>' +
+        '<div class="kuchen-desc"><strong>' + k.titel + '</strong><span>' + beschreibung + '</span></div>';
+      kfrag.appendChild(card);
+    });
+    if (kuchenSurprise) {
+      kuchenGrid.insertBefore(kfrag, kuchenSurprise);
+    } else {
+      kuchenGrid.appendChild(kfrag);
     }
   }
 });
