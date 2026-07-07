@@ -957,7 +957,7 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
   <div class="hero-particles" id="heroParticles"></div>
   <div class="hero-text">
     <div class="hero-cafe-img">
-      <img id="titelbildImg" src="" alt="" onerror="this.style.display='none'">
+      <img id="titelbildImg" alt="" onerror="this.style.display='none'">
     </div>
     <h1>Original <em>italienisches</em> Eis, täglich frisch</h1>
     <p class="hero-sub">Frische Eisspezialitäten, hausgemachte Kuchen, Kaffee und mehr – direkt in der Innenstadt von Templin.</p>
@@ -1330,7 +1330,7 @@ body.printing-speisekarte .hero-visual-badge { display: none !important; }
     <div>
       <!-- Eismobil Foto -->
       <div class="eismobil-photo">
-        <img id="eismobilImg" src="" alt="" onerror="this.style.display='none'">
+        <img id="eismobilImg" alt="" onerror="this.style.display='none'">
       </div>
       <div class="eismobil-card">
         <div class="ec-tag">Eismobil-Preis</div>
@@ -2025,6 +2025,7 @@ window.addEventListener('DOMContentLoaded', function() {
   if (BILDER.titelbild) {
     var titelImg = document.getElementById('titelbildImg');
     if (titelImg) {
+      titelImg.style.display = '';
       titelImg.src = BILDER.titelbild.url;
       titelImg.alt = BILDER.titelbild.alt || 'Eiscafé Nico';
     }
@@ -2034,6 +2035,7 @@ window.addEventListener('DOMContentLoaded', function() {
   if (BILDER.eismobil) {
     var eismobilImg = document.getElementById('eismobilImg');
     if (eismobilImg) {
+      eismobilImg.style.display = '';
       eismobilImg.src = BILDER.eismobil.url;
       eismobilImg.alt = BILDER.eismobil.alt || 'Das Eismobil von Eiscafé Nico';
     }
