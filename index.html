@@ -43,6 +43,11 @@ nav {
   background: rgba(43,26,14,0.96);
   backdrop-filter: blur(18px);
   border-bottom: 1px solid rgba(200,131,74,0.18);
+  /* Eigene GPU-Ebene erzwingen, damit der Blur beim Scrollen nicht
+     bei jedem Frame neu über den (teils animierten) Inhalt darunter
+     berechnet werden muss -> verhindert Ruckeln beim Scrollen */
+  transform: translateZ(0);
+  will-change: transform;
 }
 .nav-logo {
   font-family: 'Cormorant Garamond', serif;
@@ -743,6 +748,9 @@ body { top: 0px !important; }
   transition: opacity .5s ease, transform .5s ease;
   /* Nie breiter als der Viewport */
   max-width: calc(100vw - 1.5rem);
+  /* eigene GPU-Ebene, wie bei nav -> kein Neuzeichnen beim Scrollen */
+  transform: translateZ(0);
+  will-change: transform;
 }
 .scroll-cone.hidden {
   opacity: 0; pointer-events: none; transform: translateX(30px);
@@ -2077,14 +2085,26 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 
   // ── Preis-Banner: pulsierende weiche Kreise ──
+  // Hinweis: früher wurde hier ein echter CSS filter:blur(40px) auf
+  // animierten Elementen verwendet - das zwingt den Browser, den Blur
+  // bei jedem einzelnen Scroll-/Animations-Frame neu zu berechnen und
+  // war die Hauptursache für das Ruckeln in diesem Bereich. Ein
+  // radial-gradient sieht optisch fast identisch weich aus, kostet
+  // aber praktisch nichts, weil kein Filter-Effekt neu gerastert
+  // werden muss.
   (function() {
     var c = document.getElementById('bgPreis'); if (!c) return;
-    var cols = ['rgba(232,168,58,1)','rgba(200,131,74,1)','rgba(255,255,255,1)'];
+    var cols = ['232,168,58', '200,131,74', '255,255,255'];
     for (var i = 0; i < 5; i++) {
       var el = document.createElement('div');
       el.className = 'bg-preis-bubble';
-      var size = rand(80,260);
-      el.style.cssText = 'position:absolute;width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+cols[Math.floor(rand(0,cols.length))]+';left:'+rand(-10,110)+'%;top:'+rand(-10,110)+'%;opacity:0.06;filter:blur(40px);animation:bgPreisPulse '+rand(4,8)+'s ease-in-out '+rand(0,4)+'s infinite;pointer-events:none;';
+      var size = rand(160, 420);
+      var farbe = cols[Math.floor(rand(0, cols.length))];
+      el.style.cssText = 'position:absolute;width:'+size+'px;height:'+size+'px;border-radius:50%;' +
+        'background:radial-gradient(circle, rgba('+farbe+',0.22) 0%, rgba('+farbe+',0.08) 40%, rgba('+farbe+',0) 72%);' +
+        'left:'+rand(-10,110)+'%;top:'+rand(-10,110)+'%;' +
+        'animation:bgPreisPulse '+rand(4,8)+'s ease-in-out '+rand(0,4)+'s infinite;' +
+        'pointer-events:none;transform:translateZ(0);will-change:transform;';
       c.appendChild(el);
     }
   })();
