@@ -622,15 +622,15 @@ section { padding: 6rem 6rem; }
   margin-bottom: 1.2rem;
   box-shadow: 0 8px 28px rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.12);
-  /* Crop: only show the left ~55% where the van is, hide the Eisbecher on the right */
-  height: 300px;
+  /* Kachel im Seitenverhältnis des Fotos, damit es randlos passt */
+  aspect-ratio: 1600 / 459;
+  height: auto;
 }
 .eismobil-photo img {
-  width: 182%; /* scale up so left half fills the container */
+  width: 100%;
   height: 100%;
-  object-fit: cover; object-position: left center;
+  object-fit: cover; object-position: center center;
   display: block;
-  max-width: unset;
 }
 .ec-tag { font-size: .78rem; letter-spacing: .13em; text-transform: uppercase; color: rgba(255,255,255,.75); margin-bottom: .6rem; }
 .ec-price { font-family: 'Cormorant Garamond', serif; font-size: 4.5rem; color: #fff; line-height: 1; font-weight: 600; }
